@@ -19,10 +19,12 @@
         <!-- <img class="page-bg" src="./WebAR_files/bg-first.png"> -->
         <!--<div id="iosWxMini" class="none">因iOS微信小程序的限制<br />小程序不能打开摄像头<br />请点击“立即体验”</div>-->
         <div class="btn-group">
-            <div><img id="btnScan" src="./WebAR_files/btn-scan.png"></div>
+            <!-- <div><img id="btnScan" src="./WebAR_files/btn-scan.png"></div> -->
+            <div id="btnScan" class="btn-center">识别体验</div>
             <!-- <div><a href="https://staticfile-cdn.sightp.com/easyar/webar/xiaoxiongmao.png" target="_blank"><img
                         class="btnDown" src="./WebAR_files/btn-down.png"></a></div> -->
-            <div><img id="btnDirect" src="./WebAR_files/btn-direct.png"></div>
+            <!-- <div><img id="btnDirect" src="./WebAR_files/btn-direct.png"></div> -->
+            <div id="btnDirect" class="btn-center">立即体验</div>
         </div>
     </div>
 
@@ -101,10 +103,13 @@
 
     <div id="pagePreview" class="page none">
         <img id="btnOrigin" src="./WebAR_files/btn-origin.png">
+        <img id="btnLottery" class="none" src="./WebAR_files/btn-lottery01.png" style="display: block;">
+        <!-- <img id="btnLottery" class="none" src="./WebAR_files/btn-lottery02.png" style="display: block;"> -->
     </div>
 
     <script type="text/javascript" src="./WebAR_files/adapter.min.js"></script>
     <script type="text/javascript" src="./WebAR_files/three.min.js"></script>
+    <script type="text/javascript" src="./WebAR_files/three.module.js"></script>
     <script type="text/javascript" src="./WebAR_files/OrbitControls.js"></script>
     <script type="text/javascript" src="./WebAR_files/DeviceOrientationControls.min.js"></script>
     <script type="text/javascript" src="./WebAR_files/FBXLoader.min.js"></script>
