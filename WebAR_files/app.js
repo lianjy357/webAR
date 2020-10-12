@@ -217,6 +217,7 @@
       })
     }
   }
+  var mixersAction // 动画对象
   // 调用three.js
   class o {
     constructor() {
@@ -232,11 +233,14 @@
       this.renderer.domElement.setAttribute("class", "mainCanvas"),
       document.querySelector("#pagePreview").appendChild(this.renderer.domElement),
       this.control = new e.OrbitControls(this.camera, this.renderer.domElement),
-      this.clock = new e.Clock, this.render(), window.addEventListener("resize", () => {
+      this.clock = new e.Clock,
+      this.render(),
+      window.addEventListener("resize", () => {
         this.camera.aspect = window.innerWidth / window.innerHeight,
         this.camera.updateProjectionMatrix(), this.renderer.setSize(window.innerWidth, window.innerHeight)
       }, !1)
     }
+    
     render() {
       this.control.update(),
       this.renderer.render(this.scene, this.camera);
@@ -257,7 +261,7 @@
           this.setting.position[1],
           this.setting.position[2]
         )
-      ),
+      )
       this.model.position.set(
         this.setting.position[0],
         this.setting.position[1],
@@ -267,23 +271,6 @@
         this.setting.scale
       )
     }
-    /**
-     * 动画关键帧控制（暂停、时间段、时间点）
-     */
-    paused() {
-      // TODO: 还没完成
-      t.mixer = new e.AnimationMixer(t);
-      this.mixers.push(t.mixer);
-      const AnimationAction = t.mixer.clipAction(t.animations[0]);
-      console.log(AnimationAction)
-      if (AnimationAction.paused) {
-        // 如果是播放状态，设置为暂停状态
-        AnimationAction.paused = false;
-      } else {
-        // 如果是暂停状态，设置为播放状态
-        AnimationAction.paused = true;
-      }
-    }8
     // 等待模型加载
     loadModel(t, i, s, n) {
       this.setting = i;
@@ -307,7 +294,9 @@
           i.position[2]
         )
       ),
-      (new e.FBXLoader).load(i.model, t => {
+      this.fbxloader = new e.FBXLoader;
+      this.fbxloader.load(i.model, t => {
+        console.log('ttt',t)
         this.model = t;
         t.scale.setScalar(i.scale);
         t.position.set(
@@ -319,13 +308,14 @@
         if (t.animations.length > 0) {
           t.mixer = new e.AnimationMixer(t);
           this.mixers.push(t.mixer);
-          const s = t.mixer.clipAction(t.animations[0]);
-          if (s.play(), !i.isLoop) {
-            s.loop = e.LoopOnce;
-            const t = window.setInterval(() => {
-              s.isRunning() || (window.clearInterval(t), n())
-            }, 500)
-          }
+          mixersAction = t.mixer.clipAction(t.animations[0]);
+          mixersAction.play()
+          // if (!i.isLoop) {
+          //   s.loop = e.LoopOnce;
+          //   const t = window.setInterval(() => {
+          //     s.isRunning() || (window.clearInterval(t), n())
+          //   }, 500)
+          // }
         }
         s()
       }, e => {
@@ -334,7 +324,20 @@
         console.info(e)
       })
     }
-    
+    /**
+     * 动画关键帧控制（暂停、时间段、时间点）
+     */
+    paused() {
+      
+        // console.log(this.camera)
+        // console.log(this.model.position)
+      
+      if(mixersAction.isRunning()){
+        mixersAction.paused=true
+      } else {
+        mixersAction.paused=false
+      }
+    }
 
   }
   // 开始执行
@@ -344,6 +347,7 @@
       this.isTurntableRunning = !1,
       this.userId = "",
       this.video = document.querySelector("#video"),
+      this.mediaElement = '', // 音频
       this.isMiniprogram = !1,
       this.webAr = new i(1e3, "recognize.php"),
       this.checkWx(),
@@ -387,9 +391,12 @@
       s.$("#btnDirect").addEventListener("click", () => {
         this.openCamera(!0)
       }, !1)
-      // s.$("#btnLottery").addEventListener("click", () => {
-      //   this.toPage("pageLottery"), document.body.removeChild(s.$("#video"))
-      // }, !1)
+      s.$("#btnLottery").addEventListener("click", () => {
+        const t = new o;
+        t.paused() // 动画控制
+        this.pauseaudio() // 声音控制
+        // document.body.removeChild(s.$("#video"))
+      }, !1)
     }
     // 跳转分享页面
     pageLottery() {
@@ -453,22 +460,31 @@
     }
     // 启动声音
     openaudio() {
-      var listener = new THREE.AudioListener();
+      // var listener = new THREE.AudioListener();
 
-      var audio = new THREE.Audio( listener );
+      // var audio = new THREE.Audio( listener );
       
       var file = './WebAR_files/376737_Skullbeatz___Bad_Cat_Maste.ogg';
 
-      var mediaElement = new Audio( file );
-      mediaElement.play();
+      this.mediaElement = new Audio( file );
+      this.mediaElement.play();
 
-      audio.setMediaElementSource( mediaElement );
+      // audio.setMediaElementSource( mediaElement );
 
-      analyser = new THREE.AudioAnalyser( audio, 128 );
+      // analyser = new THREE.AudioAnalyser( audio, 128 );
     }
-    // 停止播放声音
-    pauseaudio() {}
-    // 开始播放声音
+    // 控制播放声音
+    pauseaudio() {
+      // if(this.mediaElement!==null){             
+      //   //检测播放是否已暂停.audio.paused 在播放器播放时返回false.
+      //    alert(this.mediaElement.paused);
+      // }
+      if(this.mediaElement.paused){                 
+        this.mediaElement.play();//audio.play();// 这个就是播放  
+      }else{
+        this.mediaElement.pause();// 这个就是暂停
+      }
+    }
     // 展示配置页面
     loadPackage(e = null) {
       e || (e = {
@@ -501,10 +517,6 @@
       s.$("#btnOrigin").addEventListener("click", () => {
         // 相机回正
         t.resetModel()
-      }, !1),
-      s.$("#btnLottery").addEventListener("click", () => {
-        // s.$show("#btnLottery")
-        t.paused()
       }, !1)
     }
     toMiniPage(e = "") {
