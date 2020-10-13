@@ -218,6 +218,7 @@
     }
   }
   var mixersAction // 动画对象
+  var mediaElement // 音频
   // 调用three.js
   class o {
     constructor() {
@@ -237,7 +238,8 @@
       this.render(),
       window.addEventListener("resize", () => {
         this.camera.aspect = window.innerWidth / window.innerHeight,
-        this.camera.updateProjectionMatrix(), this.renderer.setSize(window.innerWidth, window.innerHeight)
+        this.camera.updateProjectionMatrix(),
+        this.renderer.setSize(window.innerWidth, window.innerHeight)
       }, !1)
     }
     
@@ -262,14 +264,14 @@
           this.setting.position[2]
         )
       )
-      this.model.position.set(
-        this.setting.position[0],
-        this.setting.position[1],
-        this.setting.position[2]
-      ),
-      this.model.scale.setScalar(
-        this.setting.scale
-      )
+      // this.model.position.set(
+      //   this.setting.position[0],
+      //   this.setting.position[1],
+      //   this.setting.position[2]
+      // ),
+      // this.model.scale.setScalar(
+      //   this.setting.scale
+      // )
     }
     // 等待模型加载
     loadModel(t, i, s, n) {
@@ -296,7 +298,6 @@
       ),
       this.fbxloader = new e.FBXLoader;
       this.fbxloader.load(i.model, t => {
-        console.log('ttt',t)
         this.model = t;
         t.scale.setScalar(i.scale);
         t.position.set(
@@ -319,6 +320,7 @@
         }
         s()
       }, e => {
+        console.log('dddddd',e)
         t(e)
       }, e => {
         console.info(e)
@@ -347,7 +349,6 @@
       this.isTurntableRunning = !1,
       this.userId = "",
       this.video = document.querySelector("#video"),
-      this.mediaElement = '', // 音频
       this.isMiniprogram = !1,
       this.webAr = new i(1e3, "recognize.php"),
       this.checkWx(),
@@ -460,14 +461,27 @@
     }
     // 启动声音
     openaudio() {
-      // var listener = new THREE.AudioListener();
-
-      // var audio = new THREE.Audio( listener );
-      
+      // 音频文件
       var file = './WebAR_files/376737_Skullbeatz___Bad_Cat_Maste.ogg';
+      // 创建一个监听者
+      var listener = new THREE.AudioListener();
+      // 创建一个非位置音频对象  用来控制播放
+      var audio = new THREE.Audio( listener );
+      // 创建一个音频加载器对象
+      var audioLoader = new THREE.AudioLoader();
+      // 加载音频文件，返回一个音频缓冲区对象作为回调函数参数
+      var that = this;
+      audioLoader.load(file, function(AudioBuffer) {
+        // 音频缓冲区对象关联到音频对象audio
+        mediaElement = audio;
+        mediaElement.setBuffer(AudioBuffer);
+        mediaElement.setLoop(true);//是否循环
+        mediaElement.setVolume(0.5); //音量
+        mediaElement.play();
+      })
 
-      this.mediaElement = new Audio( file );
-      this.mediaElement.play();
+      // this.mediaElement = new Audio( file );
+      // this.mediaElement.play();
 
       // audio.setMediaElementSource( mediaElement );
 
@@ -479,10 +493,10 @@
       //   //检测播放是否已暂停.audio.paused 在播放器播放时返回false.
       //    alert(this.mediaElement.paused);
       // }
-      if(this.mediaElement.paused){                 
-        this.mediaElement.play();//audio.play();// 这个就是播放  
+      if(mixersAction.isRunning()){                 
+        mediaElement.play();//audio.play();// 这个就是播放  
       }else{
-        this.mediaElement.pause();// 这个就是暂停
+        mediaElement.pause();// 这个就是暂停
       }
     }
     // 展示配置页面
