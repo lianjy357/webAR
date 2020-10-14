@@ -310,7 +310,7 @@
           t.mixer = new e.AnimationMixer(t);
           this.mixers.push(t.mixer);
           mixersAction = t.mixer.clipAction(t.animations[0]);
-          mixersAction.play()
+          
           // if (!i.isLoop) {
           //   s.loop = e.LoopOnce;
           //   const t = window.setInterval(() => {
@@ -320,10 +320,31 @@
         }
         s()
       }, e => {
-        console.log('dddddd',e)
         t(e)
       }, e => {
         console.info(e)
+      })
+    }
+    // 加载声音
+    loadaudio(t, i, s, n) {
+      // 音频文件
+      var file = './WebAR_files/376737_Skullbeatz___Bad_Cat_Maste.ogg';
+      // 创建一个监听者
+      var listener = new e.AudioListener();
+      // 创建一个非位置音频对象  用来控制播放
+      var audio = new e.Audio( listener );
+      // 创建一个音频加载器对象
+      var audioLoader = new e.AudioLoader();
+      // 加载音频文件，返回一个音频缓冲区对象作为回调函数参数
+      audioLoader.load(file, function(AudioBuffer) {
+        // 音频缓冲区对象关联到音频对象audio
+        mediaElement = audio;
+        mediaElement.setBuffer(AudioBuffer);
+        mediaElement.setLoop(true);//是否循环
+        mediaElement.setVolume(1); //音量
+        s()
+      }, e => {
+        t(e)
       })
     }
     /**
@@ -451,42 +472,28 @@
     removeVideo() {
       document.body.removeChild(this.video)
     }
-    // 开启等待进度条
-    updateProgress(e) {
-      document.querySelector("#progress");
+    // 开启等待进度条(音频)
+    updateProgressmedia(e) {
+      // document.querySelector("#progress");
       const t = e.loaded / e.total * 100;
       s.$("#loadingPercent").innerHTML = t < 100 ? t.toFixed(1) + "%" : "100%", t >= 100 && window.setTimeout(() => {
-        document.body.removeChild(s.$("#pageLoading")), s.$show("#pagePreview")
+        
       }, 10)
     }
-    // 启动声音
-    openaudio() {
-      // 音频文件
-      var file = './WebAR_files/376737_Skullbeatz___Bad_Cat_Maste.ogg';
-      // 创建一个监听者
-      var listener = new THREE.AudioListener();
-      // 创建一个非位置音频对象  用来控制播放
-      var audio = new THREE.Audio( listener );
-      // 创建一个音频加载器对象
-      var audioLoader = new THREE.AudioLoader();
-      // 加载音频文件，返回一个音频缓冲区对象作为回调函数参数
-      var that = this;
-      audioLoader.load(file, function(AudioBuffer) {
-        // 音频缓冲区对象关联到音频对象audio
-        mediaElement = audio;
-        mediaElement.setBuffer(AudioBuffer);
-        mediaElement.setLoop(true);//是否循环
-        mediaElement.setVolume(0.5); //音量
-        mediaElement.play();
-      })
-
-      // this.mediaElement = new Audio( file );
-      // this.mediaElement.play();
-
-      // audio.setMediaElementSource( mediaElement );
-
-      // analyser = new THREE.AudioAnalyser( audio, 128 );
+    // 关闭等待进度条（音频）
+    offProgressmedia() {
+      document.body.removeChild(s.$("#pageLoadingmedia"))
     }
+    // 开启等待进度条(模型)
+    updateProgress(e) {
+      // document.querySelector("#progress");
+      const t = e.loaded / e.total * 100;
+      s.$("#loadingPercent").innerHTML = t < 100 ? t.toFixed(1) + "%" : "100%", t >= 100 && window.setTimeout(() => {
+        document.body.removeChild(s.$("#pageLoading")),
+        s.$show("#pagePreview")
+      }, 10)
+    }
+    
     // 控制播放声音
     pauseaudio() {
       // if(this.mediaElement!==null){             
@@ -502,32 +509,39 @@
     // 展示配置页面
     loadPackage(e = null) {
       e || (e = {
-          // model: "https://threejs.org/examples/models/fbx/Samba%20Dancing.fbx",
-          // model: "./WebAR_files/business07_m.FBX",
-          // model: "./WebAR_files/Dancing.fbx",
-          // model: "./WebAR_files/liming-sit-talk.FBX",
-          // model: "https://wow.techbrood.com/uploads/1911/forest/AssaultRifle_1.fbx",
-          // model: "./WebAR_files/newfbx.fbx",
-          model: "./WebAR_files/ball.fbx",
-          scale: 1,
-          isLoop: !0,
-          position: [0, -7, 0],
-          cameraPosition: [0, 15, 50],
-          lightPosition: [5, 55, 10]
-        }),
-        this.toPage("pageLoading");
+        // model: "https://threejs.org/examples/models/fbx/Samba%20Dancing.fbx",
+        model: "./WebAR_files/Dancing.fbx",
+        // model: "./WebAR_files/liming-sit-talk.FBX",
+        // model: "https://wow.techbrood.com/uploads/1911/forest/AssaultRifle_1.fbx",
+        // model: "./WebAR_files/newfbx.fbx",
+        // model: "./WebAR_files/ball.fbx",
+        // model: "./WebAR_files/FallGuys.FBX",
+        // model: "./WebAR_files/cloth.fbx",
+        scale: .12,
+        isLoop: !0,
+        position: [0, -7, 0],
+        cameraPosition: [0, 15, 50],
+        lightPosition: [5, 55, 10]
+      });
       const t = new o;
-      t.loadModel(this.updateProgress, e, () => {
-        console.log(e)
-        // 定时弹出按钮
-        window.setTimeout(() => {
-          s.$show("#btnLottery")
-        }, 5e3)
-        this.openaudio();
-      }, 
-      () => {
-        console.log("finished")
-      }),
+      // 加载音频
+      this.toPage("pageLoadingmedia");
+      t.loadaudio(this.updateProgressmedia, e, () => {
+        console.log('音频加载完成');
+        // 关闭进度条
+        this.offProgressmedia;
+
+        // 加载模型
+        this.toPage("pageLoading");
+        t.loadModel(this.updateProgress, e, () => {
+          console.log('模型加载完成');
+          mixersAction.play(); // 模型play
+          mediaElement.play(); // 音频play
+        })
+
+
+      });
+      
       s.$("#btnOrigin").addEventListener("click", () => {
         // 相机回正
         t.resetModel()
