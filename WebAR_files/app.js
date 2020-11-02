@@ -310,6 +310,9 @@
           t.mixer = new e.AnimationMixer(t);
           this.mixers.push(t.mixer);
           mixersAction = t.mixer.clipAction(t.animations[0]);
+          mixersAction.timeScale = 3; //默认1，可以调节播放速度
+          mixersAction.setLoop(THREE.LoopPingPong); // 从前到后，从后到前播放
+          // s.loop = e.LoopPingpong;
           
           // if (!i.isLoop) {
           //   s.loop = e.LoopOnce;
@@ -319,11 +322,40 @@
           // }
         }
         s()
-      }, e => {
+      },
+      e => {
         t(e)
-      }, e => {
+      },
+      e => {
         console.info(e)
-      })
+      }
+      )
+      // this.fbxloader = new GLTFLoader.GLTFLoader();
+      // this.fbxloader.load(i.model, t => {
+      //   let model = t.scene;
+      //   this.scene.add(model);
+      //   model.traverse( function ( object ) {
+      //     if ( object.isMesh ) object.castShadow = true;
+      //   } );
+      //   skeleton = new THREE.SkeletonHelper( model );
+      //   skeleton.visible = false;
+      //   scene.add( skeleton );
+
+
+      //   if (t.animations.length > 0) {
+      //     t.mixer = new e.AnimationMixer(t);
+      //     this.mixers.push(t.mixer);
+      //     mixersAction = t.mixer.clipAction(t.animations[0]);
+      //   }
+      //   s()
+      // },
+      // e => {
+      //   t(e)
+      // },
+      // e => {
+      //   console.info(e)
+      // }
+      // )
     }
     // 加载声音
     loadaudio(t, i, s, n) {
@@ -510,13 +542,14 @@
     loadPackage(e = null) {
       e || (e = {
         // model: "https://threejs.org/examples/models/fbx/Samba%20Dancing.fbx",
-        model: "./WebAR_files/Dancing.fbx",
+        // model: "./WebAR_files/Dancing.fbx",
         // model: "./WebAR_files/liming-sit-talk.FBX",
         // model: "https://wow.techbrood.com/uploads/1911/forest/AssaultRifle_1.fbx",
         // model: "./WebAR_files/newfbx.fbx",
         // model: "./WebAR_files/ball.fbx",
-        // model: "./WebAR_files/FallGuys.FBX",
-        // model: "./WebAR_files/cloth.fbx",
+        // model: "./WebAR_files/new.fbx",
+        model: "./WebAR_files/xx.fbx",
+        // model: "./WebAR_files/Xbot.glb",
         scale: .12,
         isLoop: !0,
         position: [0, -7, 0],
